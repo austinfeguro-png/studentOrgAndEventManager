@@ -12,6 +12,8 @@ const EVENT_STATUSES = [
   "Completed"
 ];
 
+const YEAR_LEVELS = ["1st Year", "2nd Year", "3rd Year", "4th Year", "Other"];
+
 // Event model: { id, name, date, venue, capacity, status }
 // Registration model: {
 //   id, eventId, studentName, studentId, yearLevel, dateRegistered, attendance
@@ -65,22 +67,41 @@ function registrationCount(eventId, source = registrations) {
 
 function getEventInput(form) {
   const fields = new FormData(form);
+  const capacityValue = String(fields.get("eventCapacity") || "").trim();
   return {
     name: String(fields.get("eventName") || "").trim(),
     date: String(fields.get("eventDate") || "").trim(),
     venue: String(fields.get("eventVenue") || "").trim(),
-    capacity: Number(fields.get("eventCapacity")),
+    capacity: capacityValue === "" ? NaN : Number(capacityValue),
     status: String(fields.get("eventStatus") || "Draft")
   };
 }
 
+function isValidDateValue(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
 function validateEvent(input) {
-  if (!input.name || !input.date || !input.venue) {
-    return "Enter an event name, date, and venue.";
+  if (typeof input.name !== "string" || !input.name.trim()) {
+    return "Event name is required.";
+  }
+  if (!input.date) {
+    return "Event date is required.";
+  }
+  if (!isValidDateValue(input.date)) {
+    return "Enter a valid event date.";
+  }
+  if (typeof input.venue !== "string" || !input.venue.trim()) {
+    return "Venue is required.";
   }
 
   if (!Number.isInteger(input.capacity) || input.capacity < 1) {
-    return "Capacity must be a whole number greater than zero.";
+    return "Capacity must be a positive whole number.";
   }
 
   if (!EVENT_STATUSES.includes(input.status)) {
@@ -97,7 +118,13 @@ function addEvent(input) {
     return { ok: false, message: "New events must start in Draft status." };
   }
 
-  const event = { id: makeId("event"), ...input };
+  const event = {
+    id: makeId("event"),
+    ...input,
+    name: input.name.trim(),
+    date: input.date.trim(),
+    venue: input.venue.trim()
+  };
   const nextEvents = [...events, event];
 
   return saveData(nextEvents, registrations)
@@ -123,7 +150,13 @@ function updateEvent(eventId, input) {
     return { ok: false, message: "Event status can stay the same or advance one step at a time." };
   }
 
-  const updatedEvent = { ...existingEvent, ...input };
+  const updatedEvent = {
+    ...existingEvent,
+    ...input,
+    name: input.name.trim(),
+    date: input.date.trim(),
+    venue: input.venue.trim()
+  };
   const nextEvents = events.map((event) => event.id === eventId ? updatedEvent : event);
 
   return saveData(nextEvents, registrations)
@@ -155,15 +188,34 @@ function getRegistrationInput(form) {
 }
 
 function addRegistration(input) {
+  input = {
+    ...input,
+    eventId: typeof input.eventId === "string" ? input.eventId.trim() : "",
+    studentName: typeof input.studentName === "string" ? input.studentName.trim() : "",
+    studentId: typeof input.studentId === "string" ? input.studentId.trim() : "",
+    yearLevel: typeof input.yearLevel === "string" ? input.yearLevel.trim() : "",
+    dateRegistered: typeof input.dateRegistered === "string" ? input.dateRegistered.trim() : ""
+  };
+
   const event = events.find((item) => item.id === input.eventId);
-  if (!event) return { ok: false, message: "Select an event before registering." };
-  if (!input.studentName || !input.studentId || !input.yearLevel || !input.dateRegistered) {
-    return { ok: false, message: "Enter the student's name, ID, year level, and registration date." };
-  }
+  if (!input.eventId) return { ok: false, message: "Please select an event." };
+  if (!event) return { ok: false, message: "The selected event is not available." };
   if (event.status !== "Open for Registration") {
     return { ok: false, message: "This event is not open for registration." };
   }
+  if (!input.studentName) return { ok: false, message: "Student name is required." };
+  if (!input.studentId) return { ok: false, message: "Student ID is required." };
+  if (!YEAR_LEVELS.includes(input.yearLevel)) {
+    return { ok: false, message: "Select a valid year level." };
+  }
+  if (!input.dateRegistered) {
+    return { ok: false, message: "Registration date is required." };
+  }
+  if (!isValidDateValue(input.dateRegistered)) {
+    return { ok: false, message: "Enter a valid registration date." };
+  }
   if (registrations.some((registration) => registration.eventId === input.eventId
+    && typeof registration.studentId === "string"
     && registration.studentId.trim().toLowerCase() === input.studentId.toLowerCase())) {
     return { ok: false, message: "This student ID is already registered for this event." };
   }
