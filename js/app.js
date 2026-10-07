@@ -90,13 +90,17 @@ function registrationCount(eventId, source = registrations) {
   return source.filter((registration) => registration.eventId === eventId).length;
 }
 
+function readTrimmedField(fields, fieldName) {
+  return String(fields.get(fieldName) || "").trim();
+}
+
 function getEventInput(form) {
   const fields = new FormData(form);
-  const capacityValue = String(fields.get("eventCapacity") || "").trim();
+  const capacityValue = readTrimmedField(fields, "eventCapacity");
   return {
-    name: String(fields.get("eventName") || "").trim(),
-    date: String(fields.get("eventDate") || "").trim(),
-    venue: String(fields.get("eventVenue") || "").trim(),
+    name: readTrimmedField(fields, "eventName"),
+    date: readTrimmedField(fields, "eventDate"),
+    venue: readTrimmedField(fields, "eventVenue"),
     capacity: capacityValue === "" ? NaN : Number(capacityValue),
     status: String(fields.get("eventStatus") || "Draft")
   };
@@ -204,11 +208,11 @@ function deleteEvent(eventId) {
 function getRegistrationInput(form) {
   const fields = new FormData(form);
   return {
-    eventId: String(fields.get("registrationEvent") || "").trim(),
-    studentName: String(fields.get("studentName") || "").trim(),
-    studentId: String(fields.get("studentId") || "").trim(),
-    yearLevel: String(fields.get("yearLevel") || "").trim(),
-    dateRegistered: String(fields.get("dateRegistered") || "").trim()
+    eventId: readTrimmedField(fields, "registrationEvent"),
+    studentName: readTrimmedField(fields, "studentName"),
+    studentId: readTrimmedField(fields, "studentId"),
+    yearLevel: readTrimmedField(fields, "yearLevel"),
+    dateRegistered: readTrimmedField(fields, "dateRegistered")
   };
 }
 
