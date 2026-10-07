@@ -41,14 +41,39 @@ function loadStoredArray(key) {
 }
 
 function saveData(nextEvents, nextRegistrations) {
+  const valuesToSave = [
+    [STORAGE_KEYS.events, JSON.stringify(nextEvents)],
+    [STORAGE_KEYS.registrations, JSON.stringify(nextRegistrations)]
+  ];
+  const previousValues = new Map();
+  const writtenKeys = [];
+
   try {
-    localStorage.setItem(STORAGE_KEYS.events, JSON.stringify(nextEvents));
-    localStorage.setItem(STORAGE_KEYS.registrations, JSON.stringify(nextRegistrations));
+    valuesToSave.forEach(([key, value]) => {
+      previousValues.set(key, localStorage.getItem(key));
+      localStorage.setItem(key, value);
+      writtenKeys.push(key);
+    });
+
     events = nextEvents;
     registrations = nextRegistrations;
     return true;
   } catch (error) {
     console.error("Could not save application data.", error);
+
+    writtenKeys.reverse().forEach((key) => {
+      try {
+        const previousValue = previousValues.get(key);
+        if (previousValue === null) {
+          localStorage.removeItem(key);
+        } else {
+          localStorage.setItem(key, previousValue);
+        }
+      } catch (rollbackError) {
+        console.error(`Could not restore the previous value for ${key}.`, rollbackError);
+      }
+    });
+
     return false;
   }
 }
