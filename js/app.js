@@ -214,6 +214,19 @@ function deleteEvent(eventId) {
   const event = events.find((item) => item.id === eventId);
   if (!event) return { ok: false, message: "Select an event to delete." };
 
+  const registered = registrationCount(eventId);
+  if (registered > 0) {
+    const completedEvent = { ...event, status: "Completed" };
+    const nextEvents = events.map((item) => item.id === eventId ? completedEvent : item);
+
+    return saveData(nextEvents, registrations)
+      ? {
+        ok: true,
+        message: `Event "${event.name}" has ${registered} registration(s), so it could not be deleted and was marked Completed. Its registrations were kept.`
+      }
+      : { ok: false, message: "The event could not be updated in this browser." };
+  }
+
   const nextEvents = events.filter((item) => item.id !== eventId);
   const nextRegistrations = registrations.filter((item) => item.eventId !== eventId);
 
@@ -537,11 +550,10 @@ function removeEvent(eventId) {
   }
 
   const count = registrationCount(eventId);
-  const details = count ? ` Its ${count} registration(s) will also be deleted.` : "";
-  if (!window.confirm(`Delete "${event.name}"?${details}`)) return;
+  if (count === 0 && !window.confirm(`Delete "${event.name}"?`)) return;
 
   const result = deleteEvent(eventId);
-  if (editingEventId === eventId) restoreNewEventForm();
+  if (result.ok && editingEventId === eventId) restoreNewEventForm();
   showResult(result);
   render();
 }
