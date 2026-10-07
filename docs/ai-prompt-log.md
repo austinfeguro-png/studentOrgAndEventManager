@@ -60,3 +60,11 @@ Record prompts used during development so AI assistance is transparent and the p
 - **How the output was used:** Codex identified duplicated string conversion and trimming in the event and registration form parsers and extracted it into a reusable `readTrimmedField` helper. This reduces duplicated normalization while leaving numeric conversion, validation, storage rollback, and business logic unchanged.
 - **Evaluation:** Regression checks passed for event add/edit/delete, status progression, registered counts and slots, registration, capacity and duplicate restrictions, cancellation, validation, persistence/reload, and Stage 5 rollback behavior. JavaScript syntax, `git diff --check`, and headless Chrome startup checks passed.
 - **Changes reviewed or made by the student:** The student reviewed the refactoring and regression results and verified that the behavior of the existing application was preserved. Git commits are handled manually by the student.
+
+### 2026-10-07 — Stage 8: Check-in and Attendance Rate
+
+- **Tool/model:** OpenAI Codex
+- **Prompt:** Implement the check-in and attendance-rate feature in the existing HTML, CSS, vanilla JavaScript, and localStorage application. Permit check-in only for students registered for the selected event; prevent repeat check-ins; persist attendance; calculate registered and present counts and attendance rates, including 0% for events with no registrations; provide clear feedback; and test the feature and existing functionality without changing Git history.
+- **How the output was used:** Codex implemented the feature in `index.html` and `js/app.js` on the `feature/check-in-attendance-rate` branch. It performed syntax, diff, browser, feature, persistence, and regression checks.
+- **Evaluation:** Checks covered successful check-in, missing information, unregistered students, repeat check-ins, attendance counts and rates including the zero-registration case, persistence after reload, and existing event and registration functionality.
+- **Changes reviewed or made by the student:** The student reviewed the implementation and Codex test results and verified the feature behavior and preservation of existing functionality. The student manually committed and pushed the feature branch and created the pull request into `main`.
