@@ -23,9 +23,9 @@
   <main class="container dashboard">
     <section class="feedback-section" aria-labelledby="feedback-heading">
       <h2 class="visually-hidden" id="feedback-heading">Application messages</h2>
-      <p class="message message-success" role="status"><strong>Success messages</strong><span>Success messages will appear here.</span></p>
-      <p class="message message-error" role="alert"><strong>Error messages</strong><span>Error messages will appear here.</span></p>
-      <p class="message message-validation"><strong>Validation messages</strong><span>Validation guidance will appear here.</span></p>
+      <p class="message message-success" role="status"><strong>Success</strong><span id="success-message">Ready.</span></p>
+      <p class="message message-error" role="alert"><strong>Error</strong><span id="error-message">No errors.</span></p>
+      <p class="message message-validation"><strong>Validation</strong><span id="validation-message">Enter the required information to continue.</span></p>
     </section>
 
     <section class="panel" id="event-management" aria-labelledby="events-heading">
@@ -33,21 +33,22 @@
         <div><p class="eyebrow">Organization planning</p><h2 id="events-heading">Event Management</h2></div>
         <span class="section-number">01</span>
       </div>
-      <form class="form-grid" aria-label="Event form">
+      <form class="form-grid" id="event-form" aria-label="Event form">
         <label>Event name<input type="text" name="eventName" placeholder="e.g. Organization orientation"></label>
         <label>Date<input type="date" name="eventDate"></label>
         <label>Venue<input type="text" name="eventVenue" placeholder="Enter a venue"></label>
         <label>Capacity<input type="number" name="eventCapacity" min="1" placeholder="Maximum attendees"></label>
         <label>Status
           <select name="eventStatus">
-            <option value="">Select a status</option>
-            <option>Draft</option><option>Open for Registration</option><option>Closed</option><option>Completed</option>
+            <option value="Draft">Draft</option>
+            <option>Open for Registration</option><option>Closed</option><option>Completed</option>
           </select>
         </label>
         <div class="form-actions" aria-label="Event actions">
-          <button class="button button-primary" type="button">Add Event</button>
-          <button class="button button-secondary" type="button">Edit Event</button>
-          <button class="button button-danger-outline" type="button">Delete Event</button>
+          <button class="button button-primary" id="add-event-button" type="button">Add Event</button>
+          <button class="button button-secondary" id="edit-event-button" type="button">Edit Event</button>
+          <button class="button button-danger-outline" id="delete-event-button" type="button">Delete Event</button>
+          <button class="button button-secondary" id="cancel-edit-button" type="button" hidden>Cancel Edit</button>
         </div>
       </form>
       <div class="table-heading"><h3>Events</h3><p>Event records and registration capacity</p></div>
@@ -55,7 +56,7 @@
         <table>
           <caption class="visually-hidden">Events with dates, venues, capacities, and available actions</caption>
           <thead><tr><th>Event name</th><th>Date</th><th>Venue</th><th>Capacity</th><th>Status</th><th>Registered</th><th>Slots left</th><th>Actions</th></tr></thead>
-          <tbody><tr><td colspan="8" class="empty-state">No events to display yet. Event records will appear here.</td></tr></tbody>
+          <tbody id="events-table-body"><tr><td colspan="8" class="empty-state">No events to display yet. Event records will appear here.</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -67,7 +68,7 @@
       </div>
       <form class="form-grid" aria-label="Student registration form">
         <label class="field-wide">Event
-          <select name="registrationEvent"><option value="">Select an event</option></select>
+          <select name="registrationEvent" id="registration-event"><option value="">Select an open event</option></select>
         </label>
         <label>Student name<input type="text" name="studentName" placeholder="Full name"></label>
         <label>Student ID<input type="text" name="studentId" placeholder="Student number"></label>
@@ -75,14 +76,14 @@
           <select name="yearLevel"><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Other</option></select>
         </label>
         <label>Date registered<input type="date" name="dateRegistered"></label>
-        <div class="form-actions"><button class="button button-primary" type="button">Register Student</button></div>
+        <div class="form-actions"><button class="button button-primary" id="register-student-button" type="button">Register Student</button></div>
       </form>
       <div class="table-heading"><h3>Registrations</h3><p>Student registration records</p></div>
       <div class="table-wrap">
         <table>
           <caption class="visually-hidden">Student registrations including attendance and available actions</caption>
           <thead><tr><th>Event</th><th>Student name</th><th>Student ID</th><th>Year level</th><th>Date registered</th><th>Attendance</th><th>Actions</th></tr></thead>
-          <tbody><tr><td colspan="7" class="empty-state">No registrations to display yet. Registrations will appear here.</td></tr></tbody>
+          <tbody id="registrations-table-body"><tr><td colspan="7" class="empty-state">No registrations to display yet. Registrations will appear here.</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -94,7 +95,7 @@
       </div>
       <div class="attendance-layout">
         <form class="form-grid attendance-form" aria-label="Attendance check-in controls">
-          <label class="field-wide">Event<select name="attendanceEvent"><option value="">Select an event</option></select></label>
+          <label class="field-wide">Event<select name="attendanceEvent" id="attendance-event"><option value="">Select an event</option></select></label>
           <label class="field-wide">Student selection or Student ID<input type="text" name="attendanceStudent" placeholder="Choose a student or enter Student ID"></label>
           <button class="button button-primary" type="button">Check In</button>
         </form>

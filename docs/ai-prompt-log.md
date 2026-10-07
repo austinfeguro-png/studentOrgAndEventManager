@@ -27,3 +27,11 @@ Record prompts used during development so AI assistance is transparent and the p
 - **How the output was used:** Codex was used to create the application interface, including the event management interface, student registration interface, attendance/check-in area, search/filter controls, report areas, success/error/validation message areas, and responsive layout.
 - **Evaluation:** The generated interface was reviewed and the Stage 2 implementation stayed within scope. Verification performed included JavaScript syntax checking, checking localStorage initialization with a JavaScript initialization check, and `git diff --check`.
 - **Changes reviewed or made by the student:** The student reviewed the generated files and verified the interface and the preserved Stage 1 foundation. Git commits are handled manually by the student.
+
+### 2026-10-07 — Stage 3: Implement Core Functionality
+
+- **Tool/model:** OpenAI Codex
+- **Prompt:** Inspect the existing Stage 2 project, then implement only core event management and student registration using the existing interface, data models, and localStorage. Add event creation, editing, deletion, sequential status progression, registration, capacity and duplicate-ID checks, cancellation, calculated registration counts and remaining slots, and persistence. Keep attendance check-in, reporting, and search/filter functionality for later stages, verify the changes, and do not commit.
+- **How the output was used:** Codex connected the Stage 2 interface to the JavaScript data models and localStorage, implementing event add/edit/delete, status progression, student registration, capacity limits, duplicate student-ID prevention, cancellation, live registration counts and slots, and persistence.
+- **Evaluation:** The Stage 3 implementation was reviewed. The reported JavaScript syntax, logic, storage/reload, and `git diff --check` checks passed. Attendance check-in, reports, and search/filter behavior were intentionally left for later stages.
+- **Changes reviewed or made by the student:** The student reviewed the generated implementation and test results and verified that the core functionality worked within the Stage 3 scope. Git commits are handled manually by the student.
