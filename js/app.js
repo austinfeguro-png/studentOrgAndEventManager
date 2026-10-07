@@ -90,6 +90,23 @@ function registrationCount(eventId, source = registrations) {
   return source.filter((registration) => registration.eventId === eventId).length;
 }
 
+function presentCount(eventId, source = registrations) {
+  return source.filter((registration) => registration.eventId === eventId
+    && registration.attendance === "Present").length;
+}
+
+function getAttendanceSummary(eventId) {
+  const registered = registrationCount(eventId);
+  const present = presentCount(eventId);
+  const rate = registered === 0 ? 0 : (present / registered) * 100;
+
+  return { registered, present, rate };
+}
+
+function formatAttendanceRate(rate) {
+  return `${Number.isInteger(rate) ? rate : rate.toFixed(1)}%`;
+}
+
 function readTrimmedField(fields, fieldName) {
   return String(fields.get(fieldName) || "").trim();
 }
@@ -274,6 +291,41 @@ function cancelRegistration(registrationId) {
     : { ok: false, message: "The registration could not be cancelled in this browser." };
 }
 
+function checkInStudent(eventId, studentId) {
+  const selectedEventId = typeof eventId === "string" ? eventId.trim() : "";
+  const selectedStudentId = typeof studentId === "string" ? studentId.trim() : "";
+
+  if (!selectedEventId) {
+    return { ok: false, message: "Please select an event for check-in." };
+  }
+  if (!selectedStudentId) {
+    return { ok: false, message: "Enter a registered student's ID." };
+  }
+
+  const event = events.find((item) => item.id === selectedEventId);
+  if (!event) {
+    return { ok: false, message: "The selected event could not be found." };
+  }
+
+  const registration = registrations.find((item) => item.eventId === selectedEventId
+    && typeof item.studentId === "string"
+    && item.studentId.trim().toLowerCase() === selectedStudentId.toLowerCase());
+  if (!registration) {
+    return { ok: false, message: "This student is not registered for the selected event." };
+  }
+  if (registration.attendance === "Present") {
+    return { ok: false, message: "This student has already been checked in for the selected event." };
+  }
+
+  const nextRegistrations = registrations.map((item) => item.id === registration.id
+    ? { ...item, attendance: "Present" }
+    : item);
+
+  return saveData(events, nextRegistrations)
+    ? { ok: true, message: `${registration.studentName} was checked in for "${event.name}".` }
+    : { ok: false, message: "The check-in could not be saved in this browser." };
+}
+
 function setMessage(id, message) {
   const element = document.getElementById(id);
   if (element) element.textContent = message;
@@ -313,7 +365,7 @@ function renderEvents() {
   if (events.length === 0) {
     const row = document.createElement("tr");
     const cell = addCell(row, "No events to display yet. Add an event using the form above.");
-    cell.colSpan = 8;
+    cell.colSpan = 10;
     cell.className = "empty-state";
     body.appendChild(row);
     return;
@@ -321,14 +373,16 @@ function renderEvents() {
 
   events.forEach((event) => {
     const row = document.createElement("tr");
-    const registered = registrationCount(event.id);
+    const summary = getAttendanceSummary(event.id);
     addCell(row, event.name);
     addCell(row, event.date);
     addCell(row, event.venue);
     addCell(row, event.capacity);
     addCell(row, event.status);
-    addCell(row, registered);
-    addCell(row, Math.max(0, Number(event.capacity) - registered));
+    addCell(row, summary.registered);
+    addCell(row, summary.present);
+    addCell(row, formatAttendanceRate(summary.rate));
+    addCell(row, Math.max(0, Number(event.capacity) - summary.registered));
 
     const actions = document.createElement("td");
     actions.className = "table-actions";
@@ -407,10 +461,30 @@ function renderStorageStatus() {
   status.textContent = `Browser storage is ready. ${events.length} events and ${registrations.length} registrations are saved on this device.`;
 }
 
+function renderAttendanceSummary() {
+  const eventId = document.getElementById("attendance-event").value;
+  const registeredOutput = document.getElementById("attendance-registered");
+  const presentOutput = document.getElementById("attendance-present");
+  const rateOutput = document.getElementById("attendance-rate");
+
+  if (!eventId) {
+    registeredOutput.textContent = "—";
+    presentOutput.textContent = "—";
+    rateOutput.textContent = "—";
+    return;
+  }
+
+  const summary = getAttendanceSummary(eventId);
+  registeredOutput.textContent = String(summary.registered);
+  presentOutput.textContent = String(summary.present);
+  rateOutput.textContent = formatAttendanceRate(summary.rate);
+}
+
 function render() {
   renderEvents();
   populateEventSelects();
   renderRegistrations();
+  renderAttendanceSummary();
   renderStorageStatus();
 }
 
@@ -519,6 +593,16 @@ function initializeApplication() {
       registrationForm.elements.studentId.value = "";
       registrationForm.elements.yearLevel.value = "";
     }
+    render();
+  });
+
+  document.getElementById("attendance-event").addEventListener("change", renderAttendanceSummary);
+  document.getElementById("check-in-button").addEventListener("click", () => {
+    const eventId = document.getElementById("attendance-event").value;
+    const studentId = document.getElementById("attendance-student-id").value;
+    const result = checkInStudent(eventId, studentId);
+    showResult(result);
+    if (result.ok) document.getElementById("attendance-student-id").value = "";
     render();
   });
 
