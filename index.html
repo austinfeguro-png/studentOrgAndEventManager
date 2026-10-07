@@ -55,8 +55,8 @@
       <div class="table-wrap">
         <table>
           <caption class="visually-hidden">Events with dates, venues, capacities, and available actions</caption>
-          <thead><tr><th>Event name</th><th>Date</th><th>Venue</th><th>Capacity</th><th>Status</th><th>Registered</th><th>Slots left</th><th>Actions</th></tr></thead>
-          <tbody id="events-table-body"><tr><td colspan="8" class="empty-state">No events to display yet. Event records will appear here.</td></tr></tbody>
+          <thead><tr><th>Event name</th><th>Date</th><th>Venue</th><th>Capacity</th><th>Status</th><th>Registered</th><th>Present</th><th>Attendance rate</th><th>Slots left</th><th>Actions</th></tr></thead>
+          <tbody id="events-table-body"><tr><td colspan="10" class="empty-state">No events to display yet. Event records will appear here.</td></tr></tbody>
         </table>
       </div>
     </section>
@@ -96,17 +96,17 @@
       <div class="attendance-layout">
         <form class="form-grid attendance-form" aria-label="Attendance check-in controls">
           <label class="field-wide">Event<select name="attendanceEvent" id="attendance-event"><option value="">Select an event</option></select></label>
-          <label class="field-wide">Student selection or Student ID<input type="text" name="attendanceStudent" placeholder="Choose a student or enter Student ID"></label>
-          <button class="button button-primary" type="button">Check In</button>
+          <label class="field-wide">Registered student ID<input type="text" name="attendanceStudent" id="attendance-student-id" placeholder="Enter a registered Student ID"></label>
+          <button class="button button-primary" id="check-in-button" type="button">Check In</button>
         </form>
         <div class="summary-block">
           <h3>Selected event summary</h3>
           <div class="summary-grid">
-            <div class="summary-card"><span>Registered</span><strong>—</strong></div>
-            <div class="summary-card"><span>Present</span><strong>—</strong></div>
-            <div class="summary-card"><span>Attendance rate</span><strong>—</strong></div>
+            <div class="summary-card"><span>Registered</span><strong id="attendance-registered">—</strong></div>
+            <div class="summary-card"><span>Present</span><strong id="attendance-present">—</strong></div>
+            <div class="summary-card"><span>Attendance rate</span><strong id="attendance-rate">—</strong></div>
           </div>
-          <p class="helper-text">Summary values will be available when attendance features are implemented.</p>
+          <p class="helper-text">Attendance is counted once per registered student for the selected event.</p>
         </div>
       </div>
     </section>
