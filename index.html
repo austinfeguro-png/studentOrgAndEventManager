@@ -3,30 +3,142 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="A browser-based foundation for managing student organization events and attendance.">
+  <meta name="description" content="A browser-based dashboard for organization events, student registrations, and attendance.">
   <title>Student Organization Event and Attendance Manager</title>
   <link rel="stylesheet" href="css/style.css">
   <script src="js/app.js" defer></script>
 </head>
 <body>
   <header class="site-header">
-    <div class="container">
-      <p class="course-label">IT 415 · Application Development and Emerging Technologies</p>
-      <h1>Student Organization Event and Attendance Manager</h1>
-      <p class="intro">A starting point for organization officers to manage events, registrations, and attendance.</p>
+    <div class="container header-content">
+      <div>
+        <p class="course-label">IT 415 · Application Development and Emerging Technologies</p>
+        <h1>Student Organization Event and Attendance Manager</h1>
+        <p class="intro">Manage organization events, student registrations, and attendance in one place.</p>
+      </div>
+      <div class="header-badge" aria-label="Officer dashboard">Officer Dashboard</div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="setup-card" aria-labelledby="setup-heading">
-      <h2 id="setup-heading">Project setup</h2>
-      <p>Stage 1 establishes the project structure and browser storage foundation. Event and registration management will be added in later stages.</p>
-      <p id="storage-status" class="status-message" role="status">Preparing browser storage…</p>
+  <main class="container dashboard">
+    <section class="feedback-section" aria-labelledby="feedback-heading">
+      <h2 class="visually-hidden" id="feedback-heading">Application messages</h2>
+      <p class="message message-success" role="status"><strong>Success messages</strong><span>Success messages will appear here.</span></p>
+      <p class="message message-error" role="alert"><strong>Error messages</strong><span>Error messages will appear here.</span></p>
+      <p class="message message-validation"><strong>Validation messages</strong><span>Validation guidance will appear here.</span></p>
     </section>
+
+    <section class="panel" id="event-management" aria-labelledby="events-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Organization planning</p><h2 id="events-heading">Event Management</h2></div>
+        <span class="section-number">01</span>
+      </div>
+      <form class="form-grid" aria-label="Event form">
+        <label>Event name<input type="text" name="eventName" placeholder="e.g. Organization orientation"></label>
+        <label>Date<input type="date" name="eventDate"></label>
+        <label>Venue<input type="text" name="eventVenue" placeholder="Enter a venue"></label>
+        <label>Capacity<input type="number" name="eventCapacity" min="1" placeholder="Maximum attendees"></label>
+        <label>Status
+          <select name="eventStatus">
+            <option value="">Select a status</option>
+            <option>Draft</option><option>Open for Registration</option><option>Closed</option><option>Completed</option>
+          </select>
+        </label>
+        <div class="form-actions" aria-label="Event actions">
+          <button class="button button-primary" type="button">Add Event</button>
+          <button class="button button-secondary" type="button">Edit Event</button>
+          <button class="button button-danger-outline" type="button">Delete Event</button>
+        </div>
+      </form>
+      <div class="table-heading"><h3>Events</h3><p>Event records and registration capacity</p></div>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Events with dates, venues, capacities, and available actions</caption>
+          <thead><tr><th>Event name</th><th>Date</th><th>Venue</th><th>Capacity</th><th>Status</th><th>Registered</th><th>Slots left</th><th>Actions</th></tr></thead>
+          <tbody><tr><td colspan="8" class="empty-state">No events to display yet. Event records will appear here.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="student-registrations" aria-labelledby="registrations-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Participant records</p><h2 id="registrations-heading">Student Registration</h2></div>
+        <span class="section-number">02</span>
+      </div>
+      <form class="form-grid" aria-label="Student registration form">
+        <label class="field-wide">Event
+          <select name="registrationEvent"><option value="">Select an event</option></select>
+        </label>
+        <label>Student name<input type="text" name="studentName" placeholder="Full name"></label>
+        <label>Student ID<input type="text" name="studentId" placeholder="Student number"></label>
+        <label>Year level
+          <select name="yearLevel"><option value="">Select year level</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Other</option></select>
+        </label>
+        <label>Date registered<input type="date" name="dateRegistered"></label>
+        <div class="form-actions"><button class="button button-primary" type="button">Register Student</button></div>
+      </form>
+      <div class="table-heading"><h3>Registrations</h3><p>Student registration records</p></div>
+      <div class="table-wrap">
+        <table>
+          <caption class="visually-hidden">Student registrations including attendance and available actions</caption>
+          <thead><tr><th>Event</th><th>Student name</th><th>Student ID</th><th>Year level</th><th>Date registered</th><th>Attendance</th><th>Actions</th></tr></thead>
+          <tbody><tr><td colspan="7" class="empty-state">No registrations to display yet. Registrations will appear here.</td></tr></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="attendance" aria-labelledby="attendance-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Event day</p><h2 id="attendance-heading">Attendance / Check-in</h2></div>
+        <span class="section-number">03</span>
+      </div>
+      <div class="attendance-layout">
+        <form class="form-grid attendance-form" aria-label="Attendance check-in controls">
+          <label class="field-wide">Event<select name="attendanceEvent"><option value="">Select an event</option></select></label>
+          <label class="field-wide">Student selection or Student ID<input type="text" name="attendanceStudent" placeholder="Choose a student or enter Student ID"></label>
+          <button class="button button-primary" type="button">Check In</button>
+        </form>
+        <div class="summary-block">
+          <h3>Selected event summary</h3>
+          <div class="summary-grid">
+            <div class="summary-card"><span>Registered</span><strong>—</strong></div>
+            <div class="summary-card"><span>Present</span><strong>—</strong></div>
+            <div class="summary-card"><span>Attendance rate</span><strong>—</strong></div>
+          </div>
+          <p class="helper-text">Summary values will be available when attendance features are implemented.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="search-filters" aria-labelledby="filters-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Find records</p><h2 id="filters-heading">Search &amp; Filter Registrations</h2></div>
+        <span class="section-number">04</span>
+      </div>
+      <div class="form-grid filter-grid">
+        <label>Student name<input type="search" name="searchName" placeholder="Search by student name"></label>
+        <label>Student ID<input type="search" name="searchStudentId" placeholder="Search by Student ID"></label>
+        <label>Attendance<select name="attendanceFilter"><option value="">All attendance states</option><option>Present</option><option>Absent</option></select></label>
+        <p class="helper-text field-wide">Search and filter controls are ready for a later development stage.</p>
+      </div>
+    </section>
+
+    <section class="panel" id="reports" aria-labelledby="reports-heading">
+      <div class="section-heading">
+        <div><p class="eyebrow">Organization insights</p><h2 id="reports-heading">Reports</h2></div>
+        <span class="section-number">05</span>
+      </div>
+      <div class="report-grid">
+        <article class="report-card"><span class="report-icon" aria-hidden="true">01</span><h3>Events by status</h3><p>Event status summary will appear here.</p></article>
+        <article class="report-card"><span class="report-icon" aria-hidden="true">02</span><h3>Registration counts</h3><p>Registration totals will appear here.</p></article>
+        <article class="report-card"><span class="report-icon" aria-hidden="true">03</span><h3>Attendance rates</h3><p>Event attendance rates will appear here.</p></article>
+        <article class="report-card report-featured"><span class="report-icon" aria-hidden="true">04</span><h3>Highest attendance</h3><p>Completed event with the highest attendance rate will appear here.</p></article>
+      </div>
+    </section>
+
+    <p class="storage-note" id="storage-status" role="status">Preparing browser storage…</p>
   </main>
 
-  <footer class="container site-footer">
-    <p>IT 415 midterm project · Data is stored in this browser.</p>
-  </footer>
+  <footer class="container site-footer"><p>IT 415 midterm project · Data is stored in this browser.</p></footer>
 </body>
 </html>
